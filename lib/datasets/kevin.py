@@ -173,7 +173,7 @@ class Kevin(BaseDataset):
             pred = self.convert_label(preds[i], inverse=True)
             save_img = Image.fromarray(pred)
             save_img.putpalette(palette)
-            save_img.save(os.path.join(sv_path, i+'.png'))
+            save_img.save(os.path.join(sv_path, name+'.png'))
 
     def convert_label(self, label, inverse=False):
         temp = label.copy()
