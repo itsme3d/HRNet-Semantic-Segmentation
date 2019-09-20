@@ -179,7 +179,7 @@ def infer(config, test_dataset, testloader, model,
     model.eval()
     with torch.no_grad():
         for _, batch in enumerate(tqdm(testloader)):
-            image, size = batch
+            image, size, name = batch
             size = size[0]
             pred = test_dataset.multi_scale_inference(
                         model, 
@@ -195,4 +195,4 @@ def infer(config, test_dataset, testloader, model,
                 sv_path = os.path.join(sv_dir, 'test_results')
                 if not os.path.exists(sv_path):
                     os.mkdir(sv_path)
-                test_dataset.save_pred(pred, sv_path)
+                test_dataset.save_pred(pred, sv_path, name)

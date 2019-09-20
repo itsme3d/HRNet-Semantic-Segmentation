@@ -91,7 +91,9 @@ class Kevin(BaseDataset):
                           "name": name,}
             elif 'infer' in self.list_path:
                 image_path = item
-                sample = {"img": image_path[0],} # weird
+                name = os.path.splitext(os.path.basename(image_path[0]))[0]
+                sample = {"img": image_path[0],
+                          "name": name,} # weird
             else:
                 raise NotImplementedError('Unknown subset.')
             files.append(sample)
@@ -123,7 +125,7 @@ class Kevin(BaseDataset):
             image = self.input_transform(image)
             image = image.transpose((2, 0, 1))
 
-            return image.copy(), np.array(size) #, name
+            return image.copy(), np.array(size), name
             # return image.copy(), label.copy(), np.array(size), name
 
         if 'infer' in self.list_path:
@@ -132,7 +134,7 @@ class Kevin(BaseDataset):
             image = self.input_transform(image)
             image = image.transpose((2, 0, 1))
 
-            return image.copy(), np.array(size) #, name
+            return image.copy(), np.array(size), name
 
         # if self.flip:
         #     flip = np.random.choice(2) * 2 - 1
@@ -150,7 +152,7 @@ class Kevin(BaseDataset):
         image = self.resize_image(image, self.crop_size)
         image = self.gen_sample(image, self.multi_scale, False)
 
-        return image.copy(), np.array(size) #, name
+        return image.copy(), np.array(size), name
 
     def inference(self, model, image, flip):
         size = image.size()
