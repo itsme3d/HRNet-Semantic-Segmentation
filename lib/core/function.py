@@ -181,18 +181,18 @@ def infer(config, test_dataset, testloader, model,
         for _, batch in enumerate(tqdm(testloader)):
             image, size, name = batch
             size = size[0]
-            pred = test_dataset.multi_scale_inference(
+            pred = test_dataset.inference( # multi_scale_inference(
                         model, 
                         image, 
-                        scales=config.TEST.SCALE_LIST, 
+                        # scales=config.TEST.SCALE_LIST, 
                         flip=config.TEST.FLIP_TEST)
             
             if pred.size()[-2] != size[0] or pred.size()[-1] != size[1]:
-                pred = F.upsample(pred, (size[-2], size[-1]), 
+                pred = F.upsample(pred, (size[0], size[1]), # (size[-2], size[-1]), 
                                    mode='bilinear')
 
             if sv_pred:
                 sv_path = os.path.join(sv_dir, 'test_results')
                 if not os.path.exists(sv_path):
                     os.mkdir(sv_path)
-                test_dataset.save_pred(pred, sv_path, name)
+                test_dataset.save_pred(pred, sv_path, name[0])
