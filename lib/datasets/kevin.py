@@ -148,4 +148,39 @@ class Kevin(BaseDataset):
             pred += flip_pred
             pred = pred * 0.5
         return pred.exp()
+
+    def get_palette(self, n):
+        palette = [0] * (n * 3)
+        for j in range(0, n):
+            lab = j
+            palette[j * 3 + 0] = 0
+            palette[j * 3 + 1] = 0
+            palette[j * 3 + 2] = 0
+            i = 0
+            while lab:
+                palette[j * 3 + 0] |= (((lab >> 0) & 1) << (7 - i))
+                palette[j * 3 + 1] |= (((lab >> 1) & 1) << (7 - i))
+                palette[j * 3 + 2] |= (((lab >> 2) & 1) << (7 - i))
+                i += 1
+                lab >>= 3
+        return palette
+
+    def save_pred(self, preds, sv_path, name):
+        palette = self.get_palette(256)
+        preds = np.asarray(np.argmax(preds, axis=1), dtype=np.uint8)
+        for i in range(preds.shape[0]):
+            pred = self.convert_label(preds[i], inverse=True)
+            save_img = Image.fromarray(pred)
+            save_img.putpalette(palette)
+            save_img.save(os.path.join(sv_path, i+'.png'))
+
+    def convert_label(self, label, inverse=False):
+        temp = label.copy()
+        # if inverse:
+        #     for v, k in self.label_mapping.items():
+        #         label[temp == k] = v
+        # else:
+        #     for k, v in self.label_mapping.items():
+        #         label[temp == k] = v
+        return label
     
