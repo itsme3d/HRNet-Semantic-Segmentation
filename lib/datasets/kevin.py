@@ -165,7 +165,7 @@ class Kevin(BaseDataset):
                 lab >>= 3
         return palette
 
-    def save_pred(self, preds, sv_path, name):
+    def save_pred(self, preds, sv_path, name="name"):
         palette = self.get_palette(256)
         preds = np.asarray(np.argmax(preds, axis=1), dtype=np.uint8)
         for i in range(preds.shape[0]):
