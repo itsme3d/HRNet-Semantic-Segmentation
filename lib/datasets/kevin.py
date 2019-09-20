@@ -62,27 +62,36 @@ class Kevin(BaseDataset):
                 sample = {"img": image_path,
                           "label": label_path,
                           "name": name,}
+            elif 'infer' in self.list_path:
+                image_path = item
+                sample = {"img": image_path,}
             else:
                 raise NotImplementedError('Unknown subset.')
             files.append(sample)
         return files
 
-    def resize_image(self, image, label, size): 
+    def resize_image(self, image, size): 
         image = cv2.resize(image, size, interpolation = cv2.INTER_LINEAR) 
-        label = cv2.resize(label, size, interpolation=cv2.INTER_NEAREST)
-        return image, label
+        return image
+
+    # def resize_image(self, image, label, size): 
+    #     image = cv2.resize(image, size, interpolation = cv2.INTER_LINEAR) 
+    #     label = cv2.resize(label, size, interpolation=cv2.INTER_NEAREST)
+    #     return image, label
      
     def __getitem__(self, index):
         item = self.files[index]
-        name = item["name"]
-         
+        # name = item["name"]
+        
+        print(os.path.join(self.root, 'kevin/', item["img"]))
+
         image = cv2.imread(os.path.join(
                     self.root, 'kevin/', item["img"]), 
                     cv2.IMREAD_COLOR)
-        label = cv2.imread(os.path.join(
-                    self.root, 'kevin/', item["label"]),
-                    cv2.IMREAD_GRAYSCALE)
-        size = label.shape
+        # label = cv2.imread(os.path.join(
+        #             self.root, 'kevin/', item["label"]),
+        #             cv2.IMREAD_GRAYSCALE)
+        size = image.shape
 
         if 'testval' in self.list_path:
             image = cv2.resize(image, self.crop_size, 
@@ -90,21 +99,34 @@ class Kevin(BaseDataset):
             image = self.input_transform(image)
             image = image.transpose((2, 0, 1))
 
-            return image.copy(), label.copy(), np.array(size), name
+            return image.copy(), np.array(size) #, name
+            # return image.copy(), label.copy(), np.array(size), name
 
-        if self.flip:
-            flip = np.random.choice(2) * 2 - 1
-            image = image[:, ::flip, :] 
-            if flip == -1:
-                label = cv2.imread(os.path.join(self.root, 
-                            'kevin/', item["label_rev"]),
-                            cv2.IMREAD_GRAYSCALE)
+        if 'infer' in self.list_path:
+            image = cv2.resize(image, self.crop_size, 
+                               interpolation = cv2.INTER_LINEAR)
+            image = self.input_transform(image)
+            image = image.transpose((2, 0, 1))
+
+            return image.copy(), np.array(size) #, name
+
+        # if self.flip:
+        #     flip = np.random.choice(2) * 2 - 1
+        #     image = image[:, ::flip, :] 
+        #     if flip == -1:
+        #         label = cv2.imread(os.path.join(self.root, 
+        #                     'kevin/', item["label_rev"]),
+        #                     cv2.IMREAD_GRAYSCALE)
+        #
+        # image, label = self.resize_image(image, label, self.crop_size)
+        # image, label = self.gen_sample(image, label, self.multi_scale, False)
+        #
+        # return image.copy(), label.copy(), np.array(size), name
         
-        image, label = self.resize_image(image, label, self.crop_size)
-        image, label = self.gen_sample(image, label, 
-                                self.multi_scale, False)
+        image = self.resize_image(image, self.crop_size)
+        image = self.gen_sample(image, self.multi_scale, False)
 
-        return image.copy(), label.copy(), np.array(size), name
+        return image.copy(), np.array(size) #, name
 
     def inference(self, model, image, flip):
         size = image.size()
