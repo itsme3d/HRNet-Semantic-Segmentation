@@ -129,6 +129,12 @@ def main():
              testloader, 
              model,
              sv_dir=final_output_dir)
+    elif 'infer' in config.DATASET.TEST_SET:
+        infer(config, 
+             test_dataset, 
+             testloader, 
+             model,
+             sv_dir=final_output_dir)
 
     end = timeit.default_timer()
     logger.info('Mins: %d' % np.int((end-start)/60))

@@ -173,3 +173,26 @@ def test(config, test_dataset, testloader, model,
                 if not os.path.exists(sv_path):
                     os.mkdir(sv_path)
                 test_dataset.save_pred(pred, sv_path, name)
+
+def infer(config, test_dataset, testloader, model, 
+        sv_dir='', sv_pred=True):
+    model.eval()
+    with torch.no_grad():
+        for _, batch in enumerate(tqdm(testloader)):
+            image, size, name = batch
+            size = size[0]
+            pred = test_dataset.multi_scale_inference(
+                        model, 
+                        image, 
+                        scales=config.TEST.SCALE_LIST, 
+                        flip=config.TEST.FLIP_TEST)
+            
+            if pred.size()[-2] != size[0] or pred.size()[-1] != size[1]:
+                pred = F.upsample(pred, (size[-2], size[-1]), 
+                                   mode='bilinear')
+
+            if sv_pred:
+                sv_path = os.path.join(sv_dir, 'test_results')
+                if not os.path.exists(sv_path):
+                    os.mkdir(sv_path)
+                test_dataset.save_pred(pred, sv_path, name)

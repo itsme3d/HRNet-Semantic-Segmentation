@@ -1,0 +1,1 @@
+val_images/100034_483681.jpg val_segmentations/100034_483681.png

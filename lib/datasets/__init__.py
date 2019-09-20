@@ -10,4 +10,5 @@ from __future__ import print_function
 
 from .cityscapes import Cityscapes as cityscapes
 from .lip import LIP as lip
+from .kevin import Kevin as kevin
 from .pascal_ctx import PASCALContext as pascal_ctx
