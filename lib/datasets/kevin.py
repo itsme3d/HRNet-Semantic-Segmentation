@@ -110,7 +110,7 @@ class Kevin(BaseDataset):
      
     def __getitem__(self, index):
         item = self.files[index]
-
+        name = item["name"]
         image = cv2.imread(os.path.join(
                     self.root, 'kevin/', item["img"]), 
                     cv2.IMREAD_COLOR)
