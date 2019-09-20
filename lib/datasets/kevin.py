@@ -64,7 +64,7 @@ class Kevin(BaseDataset):
                           "name": name,}
             elif 'infer' in self.list_path:
                 image_path = item
-                sample = {"img": image_path,}
+                sample = {"img": image_path[0],} # weird
             else:
                 raise NotImplementedError('Unknown subset.')
             files.append(sample)
@@ -81,9 +81,6 @@ class Kevin(BaseDataset):
      
     def __getitem__(self, index):
         item = self.files[index]
-        # name = item["name"]
-        
-        print(os.path.join(self.root, 'kevin/', item["img"]))
 
         image = cv2.imread(os.path.join(
                     self.root, 'kevin/', item["img"]), 
